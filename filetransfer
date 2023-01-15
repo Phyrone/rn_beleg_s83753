@@ -1,0 +1,15 @@
+#!/bin/bash
+PROJECT_DIR="$(dirname "$0")"
+
+JARFILE="$PROJECT_DIR/build/libs/beleg_rn.jar"
+
+if [ ! -f $JARFILE ]
+then
+  $PROJECT_DIR/gradlew shadowJar
+fi
+
+CLI_COMMAND_NAME=$0
+java -jar "$JARFILE" $@
+exit $?
+
+#CLI_COMMAND_NAME=$0 $PROJECT_DIR/gradlew run --args "$@"

@@ -1,0 +1,56 @@
+@startuml
+
+class ClientApplictationArgs{
+
+}
+class ServerApplicationArgs{
+
+}
+
+
+
+class ShortSessionManagedSocket{
+    SharedFlow packetsWithoutSession
+    Session createSession(address)
+    Session createSession(address, sessionID)
+    suspend void listen()
+
+}
+class Session {
+    SharedFlow incomming
+    suspend void sendPacket(packet)
+}
+ShortSessionManagedSocket --> Session : create and manage
+
+class UdpSendTask{
+    /* nimmt nötige daten in constructor(z.b. start parameter) */
+    suspend void run()
+}
+
+ClientApplictationArgs -----> UdpSendTask : create and start
+ClientApplictationArgs --> DatagramSocket
+
+ServerApplicationArgs ----> UDPReceiveServer : create and start
+ServerApplicationArgs --> DatagramSocket
+
+DatagramSocket ---> ShortSessionManagedSocket : interact
+ShortSessionManagedSocket <.left>UDPReceiveServer  : interact
+UDPReceiveServer --> UdpReceiveTask : creates
+
+UdpSendTask <.left> Session : interact
+UdpReceiveTask <.right> Session : interact
+
+
+class UdpReceiveTask{
+    /* nimmt nötige daten in constructor(z.b. start packet) */
+    suspend void run()
+}
+class UDPReceiveServer{
+    suspend void listen()
+}
+class DatagramSocket{
+    suspend void send(packet)
+    suspend void receive()
+
+}
+@enduml
